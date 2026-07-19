@@ -1,0 +1,67 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: build ${{ matrix.asset }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runner: windows-latest,   asset: "ollama-search-mcp-windows-x86_64.exe" }
+          - { runner: macos-13,          asset: "ollama-search-mcp-darwin-x86_64" }
+          - { runner: macos-14,          asset: "ollama-search-mcp-darwin-aarch64" }
+          - { runner: ubuntu-latest,     asset: "ollama-search-mcp-linux-x86_64" }
+          - { runner: ubuntu-24.04-arm,  asset: "ollama-search-mcp-linux-aarch64" }
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Build server
+        run: cargo build --release --manifest-path server/Cargo.toml
+
+      - name: Stage binary
+        shell: bash
+        run: |
+          mkdir -p staging
+          if [ "${{ matrix.runner }}" = "windows-latest" ]; then
+            mv server/target/release/ollama-search-mcp.exe "staging/${{ matrix.asset }}"
+          else
+            mv server/target/release/ollama-search-mcp "staging/${{ matrix.asset }}"
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset }}
+          path: staging/${{ matrix.asset }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*
+          generate_release_notes: true
+
+# Asset names MUST match the `ollama-search-mcp-<os>-<arch><ext>` scheme that
+# src/lib.rs downloads. Edit the matrix if you add/remove platforms.

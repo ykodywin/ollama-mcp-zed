@@ -1,0 +1,6 @@
+// The API key is provided via the OLLAMA_API_KEY environment variable (see
+// installation.md). On the currently published zed_extension_api the extension
+// cannot read settings.json values directly, so this file is informational.
+{
+  // "ollama_api_key": "ollama-xxxxxxxxxxxxxxxx"
+}
