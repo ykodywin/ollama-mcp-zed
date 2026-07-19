@@ -2,7 +2,7 @@ id = "ollama-search"
 name = "Ollama Web Search"
 version = "0.1.0"
 schema_version = 1
-authors = ["Yahor"]
+authors = ["Kodywin"]
 description = "Ollama hosted web search & web fetch as an MCP context server for Zed"
 repository = "https://github.com/ykodywin/ollama-mcp-zed"
 

@@ -18,7 +18,6 @@ jobs:
         include:
           - { runner: windows-latest,   asset: "ollama-search-mcp-windows-x86_64.exe" }
           - { runner: macos-13,          asset: "ollama-search-mcp-darwin-x86_64" }
-          - { runner: macos-14,          asset: "ollama-search-mcp-darwin-aarch64" }
           - { runner: ubuntu-latest,     asset: "ollama-search-mcp-linux-x86_64" }
           - { runner: ubuntu-24.04-arm,  asset: "ollama-search-mcp-linux-aarch64" }
     steps:
